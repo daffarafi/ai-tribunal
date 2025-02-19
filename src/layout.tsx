@@ -13,7 +13,6 @@ import { Footer } from '@/components/Footer'
 import { Navbar } from '@/components/Navbar'
 import { Toaster } from '@/components/ui/sonner'
 import { AuthContextProvider } from '@/contexts/AuthContext'
-import useUserServer from '@/hooks/useUserServer'
 
 const poppins = Poppins({
   subsets: ['latin'],
@@ -59,8 +58,6 @@ export default async function RootLayout({
 }: Readonly<{
   children: React.ReactNode
 }>) {
-  const user = await useUserServer()
-
   return (
     <html lang="id" className="scroll-smooth">
       <head>
@@ -88,7 +85,7 @@ export default async function RootLayout({
         className={`${epilogue.variable} ${poppins.variable} ${raleway.variable} ${roboto.variable} ${hammersmithOne.variable} font-poppins  overflow-x-hidden min-h-screen`}
       >
         <Suspense>
-          <AuthContextProvider user={user}>
+          <AuthContextProvider>
             <Navbar />
             <main className="w-full min-h-screen bg-white">{children}</main>
             <Toaster />
