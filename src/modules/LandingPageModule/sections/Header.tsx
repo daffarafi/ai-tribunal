@@ -1,5 +1,6 @@
 import { Button } from '@/components/ui/button'
 import { Zap } from 'lucide-react'
+import Link from 'next/link'
 import React from 'react'
 
 export const Header: React.FC = () => {
@@ -16,13 +17,15 @@ export const Header: React.FC = () => {
               any topic. The verdict is in your hands.
             </p>
           </div>
-          <Button
-            className="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-6 rounded-full transition-all transform hover:scale-105 hover:shadow-neon"
-            size="lg"
-          >
-            Initiate Simulation
-            <Zap className="ml-2 h-4 w-4" />
-          </Button>
+          <Link href={'/debate-setup'}>
+            <Button
+              className="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-6 rounded-full transition-all transform hover:scale-105 hover:shadow-neon"
+              size="lg"
+            >
+              Initiate Simulation
+              <Zap className="ml-2 h-4 w-4" />
+            </Button>
+          </Link>
         </div>
       </div>
     </header>

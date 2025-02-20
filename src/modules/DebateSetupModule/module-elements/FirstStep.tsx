@@ -60,7 +60,7 @@ export const FirstStep: React.FC<FirstStepProps> = ({
           <div className="flex-shrink-0">
             <div className="relative w-32 h-32 rounded-full overflow-hidden bg-blue-900/30 border-2 border-blue-400">
               <Image
-                src={figure1Image || '/placeholder.svg'}
+                src={figure1Image || '/placeholder.png'}
                 alt={figure1 || 'First AI Entity'}
                 layout="fill"
                 objectFit="cover"
@@ -84,7 +84,7 @@ export const FirstStep: React.FC<FirstStepProps> = ({
           <div className="flex-shrink-0">
             <div className="relative w-32 h-32 rounded-full overflow-hidden bg-blue-900/30 border-2 border-blue-400">
               <Image
-                src={figure2Image || '/placeholder.svg'}
+                src={figure2Image || '/placeholder.png'}
                 alt={figure2 || 'Second AI Entity'}
                 layout="fill"
                 objectFit="cover"

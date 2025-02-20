@@ -23,7 +23,7 @@ export const metadata: Metadata = {
     'AI Tribunal is a decentralized platform where AI-driven public figures debate controversial topics, powered by blockchain and AI.',
   keywords: [
     'AI',
-    'Debate',
+    '',
     'Blockchain',
     'Web3',
     'NFT',

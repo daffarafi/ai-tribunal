@@ -3,6 +3,7 @@ import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { ArrowLeft, Zap, Lightbulb } from 'lucide-react'
+import { useRouter } from 'next/navigation'
 
 interface SecondStepProps {
   topic: string
@@ -17,6 +18,10 @@ export const SecondStep: React.FC<SecondStepProps> = ({
   handleBack,
   topicSuggestions,
 }) => {
+  const router = useRouter()
+  const initiateDebate = () => {
+    router.push('/debate')
+  }
   return (
     <>
       <div className="space-y-4">
@@ -60,9 +65,9 @@ export const SecondStep: React.FC<SecondStepProps> = ({
           Back
         </Button>
         <Button
-          type="submit"
           className="w-1/2 bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-full transition-all transform hover:scale-105 hover:shadow-neon"
           disabled={!topic}
+          onClick={initiateDebate}
         >
           Initiate AI Debate
           <Zap className="ml-2 h-4 w-4" />

@@ -34,8 +34,8 @@ export const DebateSetupModule = () => {
   const [figure1, setFigure1] = useState('')
   const [figure2, setFigure2] = useState('')
   const [topic, setTopic] = useState('')
-  const [figure1Image, setFigure1Image] = useState('/placeholder.svg')
-  const [figure2Image, setFigure2Image] = useState('/placeholder.svg')
+  const [figure1Image, setFigure1Image] = useState('/placeholder.png')
+  const [figure2Image, setFigure2Image] = useState('/placeholder.png')
   const router = useRouter()
 
   const handleSubmit = (e: React.FormEvent) => {

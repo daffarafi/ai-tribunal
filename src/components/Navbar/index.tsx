@@ -72,7 +72,7 @@ export const Navbar: React.FC = () => {
               </Link>
             </NavigationMenuItem>
             <NavigationMenuItem>
-              <Link href="/debate" legacyBehavior passHref>
+              <Link href="/debate-setup" legacyBehavior passHref>
                 <NavigationMenuLink
                   className={
                     'text-sm font-medium hover:text-blue-400 transition-colors'
