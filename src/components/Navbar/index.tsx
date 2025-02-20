@@ -82,6 +82,17 @@ export const Navbar: React.FC = () => {
                 </NavigationMenuLink>
               </Link>
             </NavigationMenuItem>
+            <NavigationMenuItem>
+              <Link href="/archives" legacyBehavior passHref>
+                <NavigationMenuLink
+                  className={
+                    'text-sm font-medium hover:text-blue-400 transition-colors'
+                  }
+                >
+                  Archives
+                </NavigationMenuLink>
+              </Link>
+            </NavigationMenuItem>
           </NavigationMenuList>
         </div>
         <div
