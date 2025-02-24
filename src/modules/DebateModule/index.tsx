@@ -6,7 +6,7 @@ import Image from 'next/image'
 import { Button } from '@/components/ui/button'
 import { ArrowRight } from 'lucide-react'
 import create_debate_script from '@/lib/DeepSeekAI'
-import { DebateScript } from '@/lib/interface'
+import { DebateScript, GeneratedImageB64, GeneratedImageURL } from '@/lib/interface'
 
 export const DebateModule = () => {
   const searchParams = useSearchParams()

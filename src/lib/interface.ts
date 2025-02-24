@@ -6,3 +6,13 @@ export interface DebateRound {
   name: string
   message: string
 }
+
+export interface GeneratedImageURL {
+  cost: number
+  url: string
+}
+
+export interface GeneratedImageB64 {
+  cost: number
+  b64: string
+}

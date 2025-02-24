@@ -2,19 +2,22 @@
 import React, { useState, useEffect } from 'react'
 import Image from 'next/image'
 import { get_img_ai } from '@/lib/GetImgAI'
+import { get_img_ai_flux } from '@/lib/GetImgAI'
+import {
+  DebateScript,
+  GeneratedImageB64,
+  GeneratedImageURL,
+} from '@/lib/interface'
 
 const TestingModule = () => {
-  const [imgData, setImgData] = useState<{
-    cost: number
-    url: string
-  } | null>(null)
+  const [imgData, setImgData] = useState<GeneratedImageURL | null>(null)
   const [error, setError] = useState<string | null>(null)
   const [loading, setLoading] = useState<boolean>(true)
 
   useEffect(() => {
     async function fetchImage() {
       try {
-        const data = await get_img_ai('Alan Turing', 'Albert Einstein')
+        const data = await get_img_ai_flux('Hitler', 'Albert Einstein')
         if (
           typeof data === 'object' &&
           data !== null &&
