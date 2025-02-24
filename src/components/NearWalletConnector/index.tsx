@@ -9,7 +9,7 @@ export const NearWalletConnector = () => {
   if (!isConnected) {
     return (
       <div className="justify-self-end">
-        <Button onClick={connect}> Connectx To NEAR </Button>
+        <Button onClick={connect}> Connect To NEAR </Button>
       </div>
     )
   }
