@@ -5,6 +5,7 @@ export interface DebateScript {
 export interface DebateRound {
   name: string
   message: string
+  description: string
 }
 
 export interface GeneratedImageURL {
