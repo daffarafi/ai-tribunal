@@ -1,13 +1,16 @@
 'use client'
 
-import { useState, useEffect, useRef } from 'react'
+import { useState, useEffect } from 'react'
 import { useSearchParams } from 'next/navigation'
 import Image from 'next/image'
 import { Button } from '@/components/ui/button'
 import { ArrowRight } from 'lucide-react'
 import create_debate_script from '@/lib/DeepSeekAI'
+import generate_script_gemini from '@/lib/GeminiAI'
 import { get_img_ai_panel } from '@/lib/GetImgAI'
 import type { DebateScript, GeneratedImageURL } from '@/lib/interface'
+
+import { DUMMY_SCRIPT } from './contants'
 
 export const DebateModule = () => {
   const searchParams = useSearchParams()
@@ -18,8 +21,6 @@ export const DebateModule = () => {
   const [isLoading, setIsLoading] = useState<boolean>(true)
   const [error, setError] = useState<string | null>(null)
 
-  const skipRef = useRef<boolean>(false)
-
   const figure1 = searchParams.get('figure1') ?? 'Alan Turing'
   const figure2 = searchParams.get('figure2') ?? 'Albert Einstein'
   const topic = searchParams.get('topic') ?? 'AI and its impact on society'
@@ -28,9 +29,21 @@ export const DebateModule = () => {
 
   // Fetch debate script dynamically using async/await with error handling
   useEffect(() => {
+    // async function fetchDebate() {
+    //   try {
+    //     const res = await create_debate_script(topic, figure1, figure2)
+    //     setDebateData(res as unknown as DebateScript)
+    //     setError(null)
+    //   } catch (e: unknown) {
+    //     const errorMessage = e instanceof Error ? e.message : 'Unknown error'
+    //     setError(`Error fetching debate data: ${errorMessage}`)
+    //   }
+    // }
+    // void fetchDebate()
+
     async function fetchDebate() {
       try {
-        const res = await create_debate_script(topic, figure1, figure2)
+        const res = await generate_script_gemini(topic, figure1, figure2)
         setDebateData(res as unknown as DebateScript)
         setError(null)
       } catch (e: unknown) {
@@ -39,6 +52,7 @@ export const DebateModule = () => {
       }
     }
     void fetchDebate()
+    // setDebateData(DUMMY_SCRIPT)
   }, [topic, figure1, figure2])
 
   // When debateData is available, fetch images for each round concurrently
@@ -105,24 +119,28 @@ export const DebateModule = () => {
         layout="fill"
         objectFit="cover"
       />
-      <div className="absolute inset-0 flex flex-col justify-center items-center bg-black/60">
-        <h1 className="text-4xl font-bold text-white mb-6">
-          {currentRound.name}
-        </h1>
-        <p className="text-xl text-white max-w-2xl text-center mb-8">
-          {currentRound.message}
-        </p>
-        {!isDebateFinished ? (
-          <Button
-            onClick={handleNext}
-            className="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-full flex items-center"
-          >
-            {currentStep < debateData.debate.length - 1 ? 'Next' : 'Finish'}
-            <ArrowRight className="ml-2 h-4 w-4" />
-          </Button>
-        ) : (
-          <h2 className="text-3xl text-yellow-300">Debate Finished</h2>
-        )}
+      <div className="container absolute bottom-0 flex left-[50%] -translate-x-[50%]  gap-8 items-end py-10">
+        <div className="flex w-full justify-between items-end">
+          {/* Text Box with Typing Effect */}
+          <div className="w-full bg-black/70 rounded-lg p-6  min-h-[200px] border-4 border-blue-400">
+            <h2 className="text-2xl font-bold text-blue-400 mb-4">
+              {currentRound.name}
+            </h2>
+            <p className="text-xl text-white">{currentRound.message}</p>
+            {/* Next Button */}
+            {!isDebateFinished ? (
+              <Button
+                onClick={handleNext}
+                className="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-full flex items-center"
+              >
+                {currentStep < debateData.debate.length - 1 ? 'Next' : 'Finish'}
+                <ArrowRight className="ml-2 h-4 w-4" />
+              </Button>
+            ) : (
+              <h2 className="text-3xl text-yellow-300">Debate Finished</h2>
+            )}
+          </div>
+        </div>
       </div>
     </div>
   )

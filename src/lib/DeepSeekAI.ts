@@ -66,6 +66,7 @@ EXAMPLE JSON OUTPUT:
   })
   const content = response.choices[0].message.content
   if (!content) {
+    console.log(content)
     throw new Error('Empty response content from DeepSeek API')
   }
   try {

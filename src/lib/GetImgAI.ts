@@ -70,9 +70,8 @@ export async function get_img_ai_flux(figure1: string, figure2: string) {
   }
 }
 
-export async function get_img_ai_panel(figure: string, description:string) {
-  const fixedPrompt =
-  `A digital illustration of a character inspired by ${figure} in Ace Attorney style. ${description}`
+export async function get_img_ai_panel(figure: string, description: string) {
+  const fixedPrompt = `A digital illustration of a character inspired by ${figure} in Ace Attorney style. ${description}`
 
   const url = 'https://api.getimg.ai/v1/flux-schnell/text-to-image'
   const options = {
@@ -100,7 +99,7 @@ export async function get_img_ai_panel(figure: string, description:string) {
     console.log(res)
     const content = (await res.json()) as { cost: number; url: string }
     console.log(content)
-    return content 
+    return content
   } catch (e: unknown) {
     console.error(e)
     return e instanceof Error ? e.message : 'Unknown error'
