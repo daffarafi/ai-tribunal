@@ -36,7 +36,7 @@ export const Navbar: React.FC = () => {
 
   return (
     <NavigationMenu
-      className="fixed text-blue-100 top-0 box-border w-full max-w-auto left-0 px-4 lg:px-6 h-16 overflow-hidden"
+      className="fixed z-20 text-blue-100 top-0 box-border w-full max-w-auto left-0 px-4 lg:px-6 h-16 overflow-hidden"
       onMouseEnter={handleMouseEnter}
       onMouseLeave={handleMouseLeave}
     >
