@@ -174,6 +174,12 @@ export const DebateModule = () => {
     { text: 'Finalizing...' },
   ]
 
+  useEffect(() => {
+    if (searchParams.toString().includes('account_id')) {
+      router.push('/archives')
+    }
+  }, [searchParams])
+
   // Early returns for loading or error
   if (isLoading) {
     return (
