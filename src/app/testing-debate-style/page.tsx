@@ -1,12 +1,8 @@
 'use client'
 
-import { useState, useEffect, useRef } from 'react'
-
 import Image from 'next/image'
-import { Button } from '@/components/ui/button'
-import { ArrowRight } from 'lucide-react'
 
-export const page = () => {
+export default function TestingDebateStyle() {
   return (
     <div className="relative min-h-screen w-full overflow-hidden">
       {/* Full-size background image for current debate round */}
@@ -37,5 +33,3 @@ export const page = () => {
     </div>
   )
 }
-
-export default page
