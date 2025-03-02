@@ -110,16 +110,6 @@ export const ArchivesModule = () => {
               className="pl-10 bg-blue-900/30 border-blue-700/50 text-blue-100 placeholder-blue-300"
             />
           </div>
-          <Select value={filter} onValueChange={setFilter}>
-            <SelectTrigger className="w-[180px] bg-blue-900/30 border-blue-700/50 text-blue-100">
-              <SelectValue placeholder="Filter by status" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="all">All Debates</SelectItem>
-              <SelectItem value="Politic">Politic</SelectItem>
-              <SelectItem value="Technology">Technology</SelectItem>
-            </SelectContent>
-          </Select>
         </div>
 
         <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
@@ -128,82 +118,86 @@ export const ArchivesModule = () => {
               <Loader className="animate-spin" />
             </div>
           ) : (
-            debates.map((debate) => (
-              <Card
-                key={debate.id}
-                className="bg-blue-900/30 border-blue-700/50 backdrop-blur-sm"
-              >
-                <CardHeader>
-                  <div className="flex justify-between items-start">
-                    <CardTitle className="text-blue-100 text-xl">
-                      {debate.topic}
-                    </CardTitle>
-                    {getStatusBadge('Lupa')}
-                  </div>
-                  <CardDescription className="text-blue-300">
-                    <div className="flex items-center gap-2">
-                      <User className="w-3 h-3" />
-                      Created by <strong>{debate.creator}</strong> •{' '}
-                      {debate.createdAt.toLocaleDateString()}
+            debates
+              .filter((debate) =>
+                debate.topic.toLowerCase().includes(searchTerm.toLowerCase())
+              )
+              .map((debate) => (
+                <Card
+                  key={debate.id}
+                  className="bg-blue-900/30 border-blue-700/50 backdrop-blur-sm"
+                >
+                  <CardHeader>
+                    <div className="flex justify-between items-start">
+                      <CardTitle className="text-blue-100 text-xl">
+                        {debate.topic}
+                      </CardTitle>
+                      {getStatusBadge('Lupa')}
                     </div>
-                    <div className="mt-1"></div>
-                  </CardDescription>
-                </CardHeader>
-                <CardContent>
-                  <div className="grid grid-cols-2 gap-4 mb-4">
-                    <div className="flex flex-col items-center space-y-3">
-                      <div className="relative w-24 h-24 rounded-full overflow-hidden bg-blue-900/30 border-2 border-blue-400">
-                        <Image
-                          src={debate.figure1ImageUrl || '/placeholder.svg'}
-                          alt={debate.figure1Name}
-                          layout="fill"
-                          objectFit="cover"
-                        />
-                      </div>
-                      <p className="font-orbitron text-white text-sm text-center">
-                        {debate.figure1Name}
-                      </p>
+                    <CardDescription className="text-blue-300">
                       <div className="flex items-center gap-2">
-                        <ThumbsUp className="w-4 h-4 text-blue-400" />
-                        <span className="text-white">
-                          {debate.figure1Votes}
-                        </span>
+                        <User className="w-3 h-3" />
+                        Created by <strong>{debate.creator}</strong> •{' '}
+                        {debate.createdAt.toLocaleDateString()}
+                      </div>
+                      <div className="mt-1"></div>
+                    </CardDescription>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="grid grid-cols-2 gap-4 mb-4">
+                      <div className="flex flex-col items-center space-y-3">
+                        <div className="relative w-24 h-24 rounded-full overflow-hidden bg-blue-900/30 border-2 border-blue-400">
+                          <Image
+                            src={debate.figure1ImageUrl || '/placeholder.svg'}
+                            alt={debate.figure1Name}
+                            layout="fill"
+                            objectFit="cover"
+                          />
+                        </div>
+                        <p className="font-orbitron text-white text-sm text-center">
+                          {debate.figure1Name}
+                        </p>
+                        <div className="flex items-center gap-2">
+                          <ThumbsUp className="w-4 h-4 text-blue-400" />
+                          <span className="text-white">
+                            {debate.figure1Votes}
+                          </span>
+                        </div>
+                      </div>
+                      <div className="flex flex-col items-center space-y-3">
+                        <div className="relative w-24 h-24 rounded-full overflow-hidden bg-blue-900/30 border-2 border-blue-400">
+                          <Image
+                            src={debate.figure2ImageUrl || '/placeholder.svg'}
+                            alt={debate.figure2Name}
+                            layout="fill"
+                            objectFit="cover"
+                          />
+                        </div>
+                        <p className="font-orbitron text-white text-sm text-center">
+                          {debate.figure2Name}
+                        </p>
+                        <div className="flex items-center gap-2">
+                          <ThumbsUp className="w-4 h-4 text-blue-400" />
+                          <span className="text-white">
+                            {debate.figure2Votes}
+                          </span>
+                        </div>
                       </div>
                     </div>
-                    <div className="flex flex-col items-center space-y-3">
-                      <div className="relative w-24 h-24 rounded-full overflow-hidden bg-blue-900/30 border-2 border-blue-400">
-                        <Image
-                          src={debate.figure2ImageUrl || '/placeholder.svg'}
-                          alt={debate.figure2Name}
-                          layout="fill"
-                          objectFit="cover"
-                        />
-                      </div>
-                      <p className="font-orbitron text-white text-sm text-center">
-                        {debate.figure2Name}
-                      </p>
-                      <div className="flex items-center gap-2">
-                        <ThumbsUp className="w-4 h-4 text-blue-400" />
-                        <span className="text-white">
-                          {debate.figure2Votes}
-                        </span>
-                      </div>
-                    </div>
-                  </div>
 
-                  <Button
-                    variant="outline"
-                    className="w-full bg-blue-900/30 hover:bg-blue-800/50 hover:text-purple-300 border-blue-700/50 text-blue-100"
-                    asChild
-                  >
-                    <Link href={`/archives/${debate.id}`}>
-                      See Detail
-                      <ArrowRight className="ml-2 h-4 w-4" />
-                    </Link>
-                  </Button>
-                </CardContent>
-              </Card>
-            ))
+                    <Button
+                      variant="outline"
+                      className="w-full bg-blue-900/30 hover:bg-blue-800/50 hover:text-purple-300 border-blue-700/50 text-blue-100"
+                      asChild
+                    >
+                      <Link href={`/archives/${debate.id}`}>
+                        See Detail
+                        <ArrowRight className="ml-2 h-4 w-4" />
+                      </Link>
+                    </Button>
+                  </CardContent>
+                </Card>
+              ))
           )}
         </div>
       </div>
