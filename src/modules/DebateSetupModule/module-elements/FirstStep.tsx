@@ -7,7 +7,7 @@ import { Label } from '@/components/ui/label'
 import { SearchSelect } from './SearchSelect'
 import { ArrowRight, Shuffle, Lightbulb, Loader } from 'lucide-react'
 import { useState } from 'react'
-import { get_two_random_public_figures } from '@/lib/DeepSeekAI'
+import { get_two_random_public_figures } from '@/lib/GeminiAI'
 import { toast } from 'sonner'
 
 interface FirstStepProps {

@@ -6,12 +6,12 @@ import { useEffect, useState, useCallback } from 'react'
 import { useRouter } from 'next/navigation'
 import { FirstStep } from './module-elements/FirstStep'
 import { SecondStep } from './module-elements/SecondStep'
+import { toast } from 'sonner'
+import { get_img_ai_profile } from '@/lib/GetImgAI'
 import {
   generate_character_suggestions,
   get_typing_suggestions,
-} from '@/lib/DeepSeekAI'
-import { toast } from 'sonner'
-import { get_img_ai_panel, get_img_ai_profile } from '@/lib/GetImgAI'
+} from '@/lib/GeminiAI'
 
 const topicSuggestions = [
   'The future of artificial intelligence',
@@ -94,7 +94,7 @@ export const DebateSetupModule = () => {
       setLoadingPublicFigures(true)
       const res = await generate_character_suggestions()
       console.log(res)
-      setPublicFigures(res as string[])
+      setPublicFigures(res)
     } catch (e: unknown) {
       const errorMessage = e instanceof Error ? e.message : 'Unknown error'
       toast.error(`Error fetching characters suggestion: ${errorMessage}`)
@@ -109,7 +109,7 @@ export const DebateSetupModule = () => {
 
       const res = await get_typing_suggestions(query)
       console.log('Search results:', res)
-      setPublicFigures(res as string[])
+      setPublicFigures(res)
     } catch (e: unknown) {
       const errorMessage = e instanceof Error ? e.message : 'Unknown error'
       toast.error(`Error searching characters: ${errorMessage}`)
