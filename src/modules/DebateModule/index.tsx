@@ -2,21 +2,21 @@
 
 import { useState, useEffect, useRef } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
-import Image from 'next/image'
 import { Button } from '@/components/ui/button'
 import { ArrowRight } from 'lucide-react'
-import create_debate_script from '@/lib/DeepSeekAI'
 import generate_script_gemini from '@/lib/GeminiAI'
 import { get_img_ai_panel } from '@/lib/GetImgAI'
-import type { DebateScript, GeneratedImageURL } from '@/lib/interface'
+import type { DebateScript, GeneratedImageB64 } from '@/lib/interface'
 import { useWalletSelector } from '@near-wallet-selector/react-hook'
 import { toast } from 'sonner'
 import { HelloNearContract } from '@/config'
 
-import { DUMMY_SCRIPT } from './contants'
 import { DebateResult } from './module-elements/DebateResult'
+import { useImageContext } from '@/contexts/ImageContext'
+import { uploadToCloudinary } from '@/utils/cloudinary/uploadToCloudinary'
 
 export const DebateModule = () => {
+  const { figure1Image, figure2Image } = useImageContext()
   const router = useRouter()
   const { signedAccountId, callFunction } = useWalletSelector()
   const [loggedIn, setLoggedIn] = useState<boolean>(false)
@@ -25,7 +25,7 @@ export const DebateModule = () => {
   const [currentStep, setCurrentStep] = useState<number>(0)
   const [isDebateFinished, setIsDebateFinished] = useState<boolean>(false)
   const [debateData, setDebateData] = useState<DebateScript | null>(null)
-  const [roundImages, setRoundImages] = useState<GeneratedImageURL[]>([])
+  const [roundImages, setRoundImages] = useState<GeneratedImageB64[]>([])
   const [isLoading, setIsLoading] = useState<boolean>(true)
   const [error, setError] = useState<string | null>(null)
   const [loading, setLoading] = useState<boolean>(false)
@@ -35,9 +35,7 @@ export const DebateModule = () => {
   const figure1 = searchParams.get('figure1') ?? 'Alan Turing'
   const figure2 = searchParams.get('figure2') ?? 'Albert Einstein'
   const topic = searchParams.get('topic') ?? 'AI and its impact on society'
-  const figure1Image = searchParams.get('image1') ?? '/figures/alan-turing.webp'
-  const figure2Image =
-    searchParams.get('image2') ?? '/figures/albert-einstein.webp'
+
   const fallbackImage =
     searchParams.get('image1') ?? '/figures/alan-turing.webp'
 
@@ -76,17 +74,18 @@ export const DebateModule = () => {
     async function fetchRoundImages() {
       if (debateData) {
         try {
-          const images: GeneratedImageURL[] = await Promise.all(
+          const images: GeneratedImageB64[] = await Promise.all(
             debateData.debate.map(async (round) => {
               const result = await get_img_ai_panel(
                 round.name,
                 round.description
               )
+              console.log(result)
               // Ensure result is always treated as GeneratedImageURL
               if (typeof result === 'string') {
-                return { url: result, cost: 0 } // Convert string to object
+                return { image: result, cost: 0 } // Convert string to object
               }
-              return result // Otherwise, assume it's already { cost, url }
+              return result // Otherwise, assume it's already { cost, image }
             })
           )
           setRoundImages(images) // Correctly assign the array without type errors
@@ -94,7 +93,7 @@ export const DebateModule = () => {
           console.error('Error fetching round images', e)
           // In case of error, use fallback images for missing rounds
           setRoundImages(
-            debateData.debate.map(() => ({ cost: 0, url: fallbackImage }))
+            debateData.debate.map(() => ({ cost: 0, image: fallbackImage }))
           )
         } finally {
           setIsLoading(false)
@@ -113,20 +112,40 @@ export const DebateModule = () => {
       toast.error('Please login first!')
       return
     }
-    console.log(debateData?.debate)
-    console.log(roundImages)
+
+    setLoading(true)
+    toast.info('Uploading images ...')
+    const [figure1ImageUrl, figure2ImageUrl, roundImagesUrls] =
+      await Promise.all([
+        uploadToCloudinary(
+          `data:image/jpeg;base64,${figure1Image}`,
+          'unsigned_preset'
+        ),
+        uploadToCloudinary(
+          `data:image/jpeg;base64,${figure2Image}`,
+          'unsigned_preset'
+        ),
+        Promise.all(
+          roundImages.map(async (round) => {
+            return await uploadToCloudinary(
+              `data:image/jpeg;base64,${round.image}`,
+              'unsigned_preset'
+            )
+          })
+        ),
+      ])
 
     // Buat objek hasil penggabungan
     const finalData = {
       topic: topic,
       figure_1_name: figure1,
-      figure_1_image_url: figure1Image,
+      figure_1_image_url: figure1ImageUrl,
       figure_2_name: figure2,
-      figure_2_image_url: figure2Image,
+      figure_2_image_url: figure2ImageUrl,
       debate_dialogue: debateData?.debate.map((round, index) => [
         round.name,
         round.message,
-        roundImages[index].url,
+        roundImagesUrls[index],
       ]),
     }
 
@@ -151,6 +170,7 @@ export const DebateModule = () => {
     } finally {
       setLoading(false)
     }
+    setLoading(false)
   }
 
   // Early returns for loading or error
@@ -165,7 +185,7 @@ export const DebateModule = () => {
   }
 
   const currentRound = debateData.debate[currentStep]
-  const currentImage = roundImages[currentStep]?.url ?? fallbackImage
+  const currentImage = roundImages[currentStep]?.image ?? fallbackImage
 
   const handleNext = () => {
     if (currentStep < debateData.debate.length - 1) {
@@ -178,11 +198,14 @@ export const DebateModule = () => {
   return (
     <div className="relative min-h-screen w-full overflow-hidden">
       {/* Full-size background image for current debate round */}
-      <Image
-        src={currentImage}
+      <img
+        src={
+          currentImage === fallbackImage
+            ? fallbackImage
+            : `data:image/jpeg;base64,${currentImage}`
+        }
         alt="Debate Round"
-        layout="fill"
-        objectFit="cover"
+        className="w-full h-full absolute object-cover"
       />
       <div className="container absolute bottom-0 flex left-[50%] -translate-x-[50%]  gap-8 items-end py-10">
         <div className="flex w-full justify-between items-end">
@@ -227,6 +250,7 @@ export const DebateModule = () => {
         isShowing={isResultShowing}
         setIsShowing={setIsResultShowing}
         publishDebate={publishDebate}
+        isPublishLoading={isLoading}
       />
     </div>
   )

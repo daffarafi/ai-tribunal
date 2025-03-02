@@ -15,5 +15,5 @@ export interface GeneratedImageURL {
 
 export interface GeneratedImageB64 {
   cost: number
-  b64: string
+  image: string
 }

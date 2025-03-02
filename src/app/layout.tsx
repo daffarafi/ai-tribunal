@@ -6,6 +6,7 @@ import { AuthContextProvider } from '@/contexts/AuthContext'
 import { Toaster } from 'sonner'
 import { Footer } from '@/components/Footer'
 import { Navbar } from '@/components/Navbar'
+import { ImageProvider } from '@/contexts/ImageContext'
 
 const orbitron = Orbitron({
   variable: '--font-orbitron',
@@ -46,12 +47,14 @@ export default async function RootLayout({
       >
         <Suspense>
           <AuthContextProvider>
-            <Navbar />
-            <main className="w-full min-h-screen flex flex-col  bg-gray-900 text-blue-100 overflow-hidden">
-              {children}
-            </main>
-            <Toaster />
-            <Footer />
+            <ImageProvider>
+              <Navbar />
+              <main className="w-full min-h-screen flex flex-col  bg-gray-900 text-blue-100 overflow-hidden">
+                {children}
+              </main>
+              <Toaster />
+              <Footer />
+            </ImageProvider>
           </AuthContextProvider>
         </Suspense>
       </body>

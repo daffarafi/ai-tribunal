@@ -3,7 +3,7 @@
 import type React from 'react'
 
 import { useEffect, useState, useCallback } from 'react'
-import { usePathname, useRouter, useSearchParams } from 'next/navigation'
+import { useRouter, useSearchParams } from 'next/navigation'
 import { FirstStep } from './module-elements/FirstStep'
 import { SecondStep } from './module-elements/SecondStep'
 import { toast } from 'sonner'
@@ -13,18 +13,18 @@ import {
   generate_topic_suggestions,
   get_typing_suggestions,
 } from '@/lib/GeminiAI'
+import { useImageContext } from '@/contexts/ImageContext'
 
 export const DebateSetupModule = () => {
+  const { setFigure1Image, setFigure2Image, figure1Image, figure2Image } =
+    useImageContext()
   const searchParams = useSearchParams()
-  const pathname = usePathname()
   const router = useRouter()
 
   const [step, setStep] = useState(1)
   const [figure1, setFigure1] = useState('')
   const [figure2, setFigure2] = useState('')
   const [topic, setTopic] = useState('')
-  const [figure1Image, setFigure1Image] = useState('/placeholder.png')
-  const [figure2Image, setFigure2Image] = useState('/placeholder.png')
   const [publicFigures, setPublicFigures] = useState<string[]>([])
   const [loadingPublicFigures, setLoadingPublicFigures] =
     useState<boolean>(true)
@@ -40,8 +40,7 @@ export const DebateSetupModule = () => {
     params.set('figure1', figure1)
     params.set('figure2', figure2)
     params.set('topic', topic)
-    params.set('image1', figure1Image)
-    params.set('image2', figure2Image)
+
     router.push('/debate' + '?' + params.toString())
   }
 
@@ -69,7 +68,7 @@ export const DebateSetupModule = () => {
       try {
         setLoading(true)
         const res = await get_img_ai_profile(figure)
-        setFigure((res as { url: string }).url)
+        setFigure((res as { image: string }).image)
       } catch (e: unknown) {
         const errorMessage = e instanceof Error ? e.message : 'Unknown error'
         toast.error(`Error fetching image for ${figure1}: ${errorMessage}`)
@@ -141,6 +140,11 @@ export const DebateSetupModule = () => {
     if (step !== 2) return
     void fetchTopicSuggestions()
   }, [step])
+
+  useEffect(() => {
+    setFigure1Image('/placeholder.png')
+    setFigure2Image('/placeholder.png')
+  }, [])
 
   return (
     <div className="container max-w-2xl mx-auto px-4 py-40 ">

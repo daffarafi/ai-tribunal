@@ -91,13 +91,13 @@ export async function get_img_ai_panel(figure: string, description: string) {
       seed: 9283,
       width: 1024,
       height: 512,
-      response_format: 'url',
+      response_format: 'b64',
     }),
   }
   try {
     const res = await fetch(url, options)
     console.log(res)
-    const content = (await res.json()) as { cost: number; url: string }
+    const content = (await res.json()) as { cost: number; image: string }
     console.log(content)
     return content
   } catch (e: unknown) {
@@ -124,13 +124,13 @@ export async function get_img_ai_profile(figure: string) {
       seed: 9283,
       width: 512,
       height: 512,
-      response_format: 'url',
+      response_format: 'b64',
     }),
   }
   try {
     const res = await fetch(url, options)
     console.log(res)
-    const content = (await res.json()) as { cost: number; url: string }
+    const content = (await res.json()) as { cost: number; image: string }
     console.log(content)
     return content
   } catch (e: unknown) {

@@ -1,9 +1,8 @@
 'use client'
 
 import React, { useRef } from 'react'
-import Image from 'next/image'
 import { Button } from '@/components/ui/button'
-import { Download, MessageCircle, Play, Share, X } from 'lucide-react'
+import { Download, MessageCircle, Play, X } from 'lucide-react'
 import { cn } from '@/lib/utils'
 
 interface DebateResult {
@@ -17,6 +16,7 @@ interface DebateResult {
   isShowing: boolean
   setIsShowing: (isShowing: boolean) => void
   publishDebate: () => void
+  isPublishLoading: boolean
 }
 
 export const DebateResult: React.FC<DebateResult> = ({
@@ -30,6 +30,7 @@ export const DebateResult: React.FC<DebateResult> = ({
   isShowing,
   setIsShowing,
   publishDebate,
+  isPublishLoading,
 }) => {
   const messagesEndRef = useRef<HTMLDivElement | null>(null)
 
@@ -71,11 +72,14 @@ export const DebateResult: React.FC<DebateResult> = ({
                 className="flex flex-col items-center space-y-4"
               >
                 <div className="relative w-32 h-32 rounded-full overflow-hidden bg-blue-900/30 border-2 border-blue-400">
-                  <Image
-                    src={figure.image || '/placeholder.svg'}
-                    alt={figure.name}
-                    layout="fill"
-                    objectFit="cover"
+                  <img
+                    src={
+                      figure.image !== '/placeholder.png'
+                        ? `data:image/jpeg;base64,${figure.image}`
+                        : '/placeholder.png'
+                    }
+                    alt={figure.name || 'First AI Entity'}
+                    className="object-cover"
                   />
                 </div>
                 <h2 className="text-xl font-orbitron">{figure.name}</h2>
@@ -113,6 +117,7 @@ export const DebateResult: React.FC<DebateResult> = ({
                   size="sm"
                   className="bg-blue-600 hover:bg-blue-700 text-white"
                   onClick={publishDebate}
+                  disabled={isPublishLoading}
                 >
                   <Download className="mr-2 h-4 w-4" />
                   Publish Debate
@@ -130,13 +135,9 @@ export const DebateResult: React.FC<DebateResult> = ({
                 >
                   <div className="flex-shrink-0">
                     <div className="relative w-10 h-10 rounded-full overflow-hidden bg-blue-900/30 border border-blue-400">
-                      <Image
-                        src={
-                          index % 2 === 0 ? figure1ImageUrl : figure2ImageUrl
-                        }
+                      <img
+                        src={`data:image/jpeg;base64,${index % 2 === 0 ? figure1ImageUrl : figure2ImageUrl}`}
                         alt={msg[0]}
-                        layout="fill"
-                        objectFit="cover"
                       />
                     </div>
                   </div>

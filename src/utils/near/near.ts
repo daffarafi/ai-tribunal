@@ -39,7 +39,7 @@ export async function initNear(): Promise<{
   }
 
   const near = await connect(config)
-  const wallet = new WalletConnection(near, 'e-voting-app')
+  const wallet = new WalletConnection(near, 'ai-tribunal')
   return { near, wallet }
 }
 

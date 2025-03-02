@@ -86,7 +86,7 @@ export const FirstStep: React.FC<FirstStepProps> = ({
       }
     }
   }
-
+  console.log(figure1Image)
   return (
     <>
       <div className="grid md:grid-cols-2 gap-8">
@@ -105,11 +105,13 @@ export const FirstStep: React.FC<FirstStepProps> = ({
                   </span>
                 </div>
               ) : (
-                <Image
-                  src={figure1Image || '/placeholder.png'}
+                <img
+                  src={
+                    figure1Image !== '/placeholder.png'
+                      ? `data:image/jpeg;base64,${figure1Image}`
+                      : '/placeholder.png'
+                  }
                   alt={figure1 || 'First AI Entity'}
-                  layout="fill"
-                  objectFit="cover"
                 />
               )}
             </div>
@@ -139,11 +141,13 @@ export const FirstStep: React.FC<FirstStepProps> = ({
                   </span>
                 </div>
               ) : (
-                <Image
-                  src={figure2Image || '/placeholder.png'}
-                  alt={figure2 || 'First AI Entity'}
-                  layout="fill"
-                  objectFit="cover"
+                <img
+                  src={
+                    figure2Image !== '/placeholder.png'
+                      ? `data:image/jpeg;base64,${figure2Image}`
+                      : '/placeholder.png'
+                  }
+                  alt={figure2 || 'Second AI Entity'}
                 />
               )}
             </div>
