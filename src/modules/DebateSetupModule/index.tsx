@@ -2,21 +2,16 @@
 
 import type React from 'react'
 
-import { useState } from 'react'
+import { useEffect, useState, useCallback } from 'react'
 import { useRouter } from 'next/navigation'
 import { FirstStep } from './module-elements/FirstStep'
 import { SecondStep } from './module-elements/SecondStep'
-
-const publicFigures = [
-  'Albert Einstein',
-  'Marie Curie',
-  'Nikola Tesla',
-  'Stephen Hawking',
-  'Ada Lovelace',
-  'Alan Turing',
-  'Grace Hopper',
-  'Richard Feynman',
-]
+import { toast } from 'sonner'
+import { get_img_ai_profile } from '@/lib/GetImgAI'
+import {
+  generate_character_suggestions,
+  get_typing_suggestions,
+} from '@/lib/GeminiAI'
 
 const topicSuggestions = [
   'The future of artificial intelligence',
@@ -37,6 +32,11 @@ export const DebateSetupModule = () => {
   const [figure1Image, setFigure1Image] = useState('/placeholder.png')
   const [figure2Image, setFigure2Image] = useState('/placeholder.png')
   const router = useRouter()
+  const [publicFigures, setPublicFigures] = useState<string[]>([])
+  const [loadingPublicFigures, setLoadingPublicFigures] =
+    useState<boolean>(true)
+  const [loadingFirstImage, setLoadingFirstImage] = useState<boolean>(false)
+  const [loadingSecondImage, setLoadingSecondImage] = useState<boolean>(false)
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
@@ -56,6 +56,71 @@ export const DebateSetupModule = () => {
       setStep(1)
     }
   }
+
+  const getFigureImage = useCallback(
+    async (
+      figure: string,
+      setFigure: (url: string) => void,
+      setLoading: (bool: boolean) => void
+    ) => {
+      if (!figure) {
+        return
+      }
+      try {
+        setLoading(true)
+        const res = await get_img_ai_profile(figure)
+        setFigure((res as { url: string }).url)
+      } catch (e: unknown) {
+        const errorMessage = e instanceof Error ? e.message : 'Unknown error'
+        toast.error(`Error fetching image for ${figure1}: ${errorMessage}`)
+      } finally {
+        setLoading(false)
+      }
+    },
+    [figure1]
+  )
+
+  useEffect(() => {
+    console.log('figure1')
+    void getFigureImage(figure1, setFigure1Image, setLoadingFirstImage)
+  }, [figure1])
+
+  useEffect(() => {
+    void getFigureImage(figure2, setFigure2Image, setLoadingSecondImage)
+  }, [figure2])
+
+  const fetchSuggestion = useCallback(async () => {
+    try {
+      setLoadingPublicFigures(true)
+      const res = await generate_character_suggestions()
+      console.log(res)
+      setPublicFigures(res)
+    } catch (e: unknown) {
+      const errorMessage = e instanceof Error ? e.message : 'Unknown error'
+      toast.error(`Error fetching characters suggestion: ${errorMessage}`)
+    } finally {
+      setLoadingPublicFigures(false)
+    }
+  }, [])
+
+  const searchPublicFigures = useCallback(async (query: string) => {
+    try {
+      setLoadingPublicFigures(true)
+
+      const res = await get_typing_suggestions(query)
+      console.log('Search results:', res)
+      setPublicFigures(res)
+    } catch (e: unknown) {
+      const errorMessage = e instanceof Error ? e.message : 'Unknown error'
+      toast.error(`Error searching characters: ${errorMessage}`)
+    } finally {
+      setLoadingPublicFigures(false)
+    }
+  }, [])
+
+  useEffect(() => {
+    void fetchSuggestion()
+  }, [fetchSuggestion])
 
   return (
     <div className="container max-w-2xl mx-auto px-4 py-40 ">
@@ -90,10 +155,12 @@ export const DebateSetupModule = () => {
             figure2Image={figure2Image}
             setFigure1={setFigure1}
             setFigure2={setFigure2}
-            setFigure1Image={setFigure1Image}
-            setFigure2Image={setFigure2Image}
             handleNext={handleNext}
             publicFigures={publicFigures}
+            loadingPublicFigures={loadingPublicFigures}
+            searchPublicFigures={searchPublicFigures}
+            loadingFirstImage={loadingFirstImage}
+            loadingSecondImage={loadingSecondImage}
           />
         )}
 

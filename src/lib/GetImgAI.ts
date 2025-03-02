@@ -48,13 +48,82 @@ export async function get_img_ai_flux(figure1: string, figure2: string) {
 
     // kalau seed sama dan prompt sama, hasilnya persis 100%
     // berguna buat konsistensi antar gambar
-    // kalo mau random seed = 0
+    // kalo mau random, pakai seed = 0
     body: JSON.stringify({
-      prompt: tryPropmt,
+      prompt: fixedPrompt,
       steps: 4,
       seed: 9283,
-      width: 1280,
-      height: 256,
+      width: 1024,
+      height: 512,
+      response_format: 'url',
+    }),
+  }
+  try {
+    const res = await fetch(url, options)
+    console.log(res)
+    const content = (await res.json()) as { cost: number; url: string }
+    console.log(content)
+    return content
+  } catch (e: unknown) {
+    console.error(e)
+    return e instanceof Error ? e.message : 'Unknown error'
+  }
+}
+
+export async function get_img_ai_panel(figure: string, description: string) {
+  const fixedPrompt = `A digital illustration of a character inspired by ${figure} in Ace Attorney style. ${description}`
+
+  const url = 'https://api.getimg.ai/v1/flux-schnell/text-to-image'
+  const options = {
+    method: 'POST',
+    headers: {
+      accept: 'application/json',
+      'content-type': 'application/json',
+      Authorization: `Bearer ${process.env.GETIMG_API}`,
+    },
+
+    // kalau seed sama dan prompt sama, hasilnya persis 100%
+    // berguna buat konsistensi antar gambar
+    // kalo mau random, pakai seed = 0
+    body: JSON.stringify({
+      prompt: fixedPrompt,
+      steps: 4,
+      seed: 9283,
+      width: 1024,
+      height: 512,
+      response_format: 'url',
+    }),
+  }
+  try {
+    const res = await fetch(url, options)
+    console.log(res)
+    const content = (await res.json()) as { cost: number; url: string }
+    console.log(content)
+    return content
+  } catch (e: unknown) {
+    console.error(e)
+    return e instanceof Error ? e.message : 'Unknown error'
+  }
+}
+
+export async function get_img_ai_profile(figure: string) {
+  const fixedPrompt = `A detailed portrait of ${figure} in Ace Attorney style, focusing on the face with a neutral background.`
+
+  const url = 'https://api.getimg.ai/v1/flux-schnell/text-to-image'
+  const options = {
+    method: 'POST',
+    headers: {
+      accept: 'application/json',
+      'content-type': 'application/json',
+      Authorization: `Bearer ${process.env.GETIMG_API}`,
+    },
+
+    body: JSON.stringify({
+      prompt: fixedPrompt,
+      steps: 4,
+      seed: 9283,
+      width: 512,
+      height: 512,
       response_format: 'url',
     }),
   }
