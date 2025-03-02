@@ -10,6 +10,7 @@ interface SecondStepProps {
   setTopic: (value: string) => void
   handleBack: () => void
   topicSuggestions: string[]
+  loadingTopicSuggestions: boolean
 }
 
 export const SecondStep: React.FC<SecondStepProps> = ({
@@ -17,6 +18,7 @@ export const SecondStep: React.FC<SecondStepProps> = ({
   setTopic,
   handleBack,
   topicSuggestions,
+  loadingTopicSuggestions,
 }) => {
   const router = useRouter()
   const initiateDebate = () => {
@@ -38,20 +40,28 @@ export const SecondStep: React.FC<SecondStepProps> = ({
             <Lightbulb className="mr-2 h-4 w-4" />
             No idea? Try one of these topics:
           </p>
-          <div className="flex flex-wrap gap-2">
-            {topicSuggestions.map((suggestion, index) => (
-              <Button
-                key={index}
-                type="button"
-                variant="outline"
-                size="sm"
-                onClick={() => setTopic(suggestion)}
-                className="bg-blue-900/30 border-blue-700/50 text-blue-100 hover:bg-blue-800/50"
-              >
-                {suggestion}
-              </Button>
-            ))}
-          </div>
+          {loadingTopicSuggestions ? (
+            <p className="text-blue-300 flex items-center">
+              <Lightbulb className="mr-2 h-4 w-4 animate-spin" />
+              Generating awesome topics based on the public figure you
+              selected...
+            </p>
+          ) : (
+            <div className="flex flex-wrap gap-2">
+              {topicSuggestions.map((suggestion, index) => (
+                <Button
+                  key={index}
+                  type="button"
+                  variant="outline"
+                  size="sm"
+                  onClick={() => setTopic(suggestion)}
+                  className="bg-blue-900/30 border-blue-700/50 text-blue-100 hover:bg-blue-800/50"
+                >
+                  {suggestion}
+                </Button>
+              ))}
+            </div>
+          )}
         </div>
       </div>
 

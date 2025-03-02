@@ -14,6 +14,7 @@ import { toast } from 'sonner'
 import { HelloNearContract } from '@/config'
 
 import { DUMMY_SCRIPT } from './contants'
+import { DebateResult } from './module-elements/DebateResult'
 
 export const DebateModule = () => {
   const router = useRouter()
@@ -29,6 +30,7 @@ export const DebateModule = () => {
   const [error, setError] = useState<string | null>(null)
   const [loading, setLoading] = useState<boolean>(false)
   const skipRef = useRef<boolean>(false)
+  const [isResultShowing, setIsResultShowing] = useState<boolean>(false)
 
   const figure1 = searchParams.get('figure1') ?? 'Alan Turing'
   const figure2 = searchParams.get('figure2') ?? 'Albert Einstein'
@@ -38,6 +40,8 @@ export const DebateModule = () => {
     searchParams.get('image2') ?? '/figures/albert-einstein.webp'
   const fallbackImage =
     searchParams.get('image1') ?? '/figures/alan-turing.webp'
+
+  console.log('figure1Image: ', figure1Image)
 
   // Fetch debate script dynamically using async/await with error handling
   useEffect(() => {
@@ -116,37 +120,37 @@ export const DebateModule = () => {
     const finalData = {
       topic: topic,
       figure_1_name: figure1,
-      figure_1_image_url:
-        'https://res.cloudinary.com/dva9njnya/image/upload/alan-turing.webp',
+      figure_1_image_url: figure1Image,
       figure_2_name: figure2,
-      figure_2_image_url:
-        'https://res.cloudinary.com/dva9njnya/image/upload/albert-einstein.webp',
+      figure_2_image_url: figure2Image,
       debate_dialogue: debateData?.debate.map((round, index) => [
         round.name,
-        round.description,
+        round.message,
         roundImages[index].url,
       ]),
     }
 
     console.log(finalData)
 
-    // try {
-    //   setLoading(true)
-    //   callFunction({
-    //     contractId: HelloNearContract,
-    //     method: 'create_debate',
-    //     args: finalData,
-    //   })
-    //   await new Promise((resolve) => setTimeout(resolve, 300))
+    try {
+      setLoading(true)
+      callFunction({
+        contractId: HelloNearContract,
+        method: 'create_debate',
+        args: finalData,
+      }).then(async () => {
+        router.push('/archives')
+      })
 
-    //   toast.success('Success add new session!')
-    //   router.push('/archive')
-    // } catch (err) {
-    //   console.log(err)
-    //   toast.error('Failed to add new session!')
-    // } finally {
-    //   setLoading(false)
-    // }
+      await new Promise((resolve) => setTimeout(resolve, 1000))
+      toast.success('Success add new session!')
+      router.push('/archives')
+    } catch (err) {
+      console.log(err)
+      toast.error('Failed to add new session!')
+    } finally {
+      setLoading(false)
+    }
   }
 
   // Early returns for loading or error
@@ -198,11 +202,32 @@ export const DebateModule = () => {
                 <ArrowRight className="ml-2 h-4 w-4" />
               </Button>
             ) : (
-              <h2 className="text-3xl text-yellow-300">Debate Finished</h2>
+              <>
+                <h2 className="text-3xl text-yellow-300">Debate Finished</h2>
+                <Button onClick={() => setIsResultShowing(!isResultShowing)}>
+                  Show Result
+                </Button>
+              </>
             )}
           </div>
         </div>
       </div>
+      <DebateResult
+        topic={topic}
+        figure1Name={figure1}
+        figure1ImageUrl={figure1Image}
+        figure2Name={figure2}
+        figure2ImageUrl={figure2Image}
+        handleReplay={() => {
+          setCurrentStep(0)
+          setIsDebateFinished(false)
+          setIsResultShowing(false)
+        }}
+        dialogue={debateData.debate.map((round) => [round.name, round.message])}
+        isShowing={isResultShowing}
+        setIsShowing={setIsResultShowing}
+        publishDebate={publishDebate}
+      />
     </div>
   )
 }

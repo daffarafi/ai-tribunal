@@ -34,50 +34,6 @@ import { HelloNearContract } from '@/config'
 import { toast } from 'sonner'
 import { DebateProps } from './interface'
 
-// Mock data for debates
-const debates = [
-  {
-    id: 1,
-    topic: 'The Future of Artificial Intelligence',
-    figure1: {
-      name: 'Alan Turing',
-      image: '/figures/alan-turing.webp',
-      votes: 156,
-    },
-    figure2: {
-      name: 'Albert Einstein',
-      image: '/figures/albert-einstein.webp',
-      votes: 142,
-    },
-    category: 'Technology',
-    createdAt: '2024-02-20T10:00:00Z',
-    creator: {
-      name: 'John Smith',
-      image: '/placeholder.svg',
-    },
-  },
-  {
-    id: 2,
-    topic: 'The Nature of Consciousness',
-    figure1: {
-      name: 'Stephen Hawking',
-      image: '/figures/stephen-hawking.webp',
-      votes: 89,
-    },
-    figure2: {
-      name: 'Nikola Tesla',
-      image: '/figures/nikola-tesla.webp',
-      votes: 94,
-    },
-    category: 'Politic',
-    createdAt: '2024-02-19T15:30:00Z',
-    creator: {
-      name: 'Jane Doe',
-      image: '/placeholder.svg',
-    },
-  },
-]
-
 export const ArchivesModule = () => {
   const { viewFunction } = useWalletSelector()
 
@@ -114,12 +70,12 @@ export const ArchivesModule = () => {
         contractId: HelloNearContract,
         method: 'get_debates',
       })
-      console.log(debates)
+      console.log('debate: ', debates)
       const deserializedDebates = (debates as any[]).map((session) =>
         debateDeseralizer(session)
       )
       console.log(deserializedDebates)
-      setDebates(deserializedDebates)
+      setDebates(deserializedDebates.reverse())
     } catch (err) {
       console.log(err)
       toast.error('Failed to get debates!')

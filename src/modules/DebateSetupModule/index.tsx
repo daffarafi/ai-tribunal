@@ -3,46 +3,46 @@
 import type React from 'react'
 
 import { useEffect, useState, useCallback } from 'react'
-import { useRouter } from 'next/navigation'
+import { usePathname, useRouter, useSearchParams } from 'next/navigation'
 import { FirstStep } from './module-elements/FirstStep'
 import { SecondStep } from './module-elements/SecondStep'
 import { toast } from 'sonner'
 import { get_img_ai_profile } from '@/lib/GetImgAI'
 import {
   generate_character_suggestions,
+  generate_topic_suggestions,
   get_typing_suggestions,
 } from '@/lib/GeminiAI'
 
-const topicSuggestions = [
-  'The future of artificial intelligence',
-  'Climate change and renewable energy',
-  'The ethics of genetic engineering',
-  'Space exploration and colonization',
-  'Quantum computing and its applications',
-  'The role of technology in education',
-  'Cybersecurity and privacy in the digital age',
-  'The impact of social media on society',
-]
-
 export const DebateSetupModule = () => {
+  const searchParams = useSearchParams()
+  const pathname = usePathname()
+  const router = useRouter()
+
   const [step, setStep] = useState(1)
   const [figure1, setFigure1] = useState('')
   const [figure2, setFigure2] = useState('')
   const [topic, setTopic] = useState('')
   const [figure1Image, setFigure1Image] = useState('/placeholder.png')
   const [figure2Image, setFigure2Image] = useState('/placeholder.png')
-  const router = useRouter()
   const [publicFigures, setPublicFigures] = useState<string[]>([])
   const [loadingPublicFigures, setLoadingPublicFigures] =
     useState<boolean>(true)
   const [loadingFirstImage, setLoadingFirstImage] = useState<boolean>(false)
   const [loadingSecondImage, setLoadingSecondImage] = useState<boolean>(false)
+  const [topicSuggestions, setTopicSuggestions] = useState<string[]>([])
+  const [loadingTopicSuggestions, setLoadingTopicSuggestions] =
+    useState<boolean>(true)
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
-    router.push(
-      `/debate?figure1=${figure1}&figure2=${figure2}&topic=${topic}&image1=${figure1Image}&image2=${figure2Image}`
-    )
+    const params = new URLSearchParams(searchParams.toString())
+    params.set('figure1', figure1)
+    params.set('figure2', figure2)
+    params.set('topic', topic)
+    params.set('image1', figure1Image)
+    params.set('image2', figure2Image)
+    router.push('/debate' + '?' + params.toString())
   }
 
   const handleNext = () => {
@@ -118,9 +118,29 @@ export const DebateSetupModule = () => {
     }
   }, [])
 
+  const fetchTopicSuggestions = useCallback(async () => {
+    try {
+      setLoadingTopicSuggestions(true)
+      console.log(figure1, figure2)
+      const res = await generate_topic_suggestions(figure1, figure2)
+      console.log(res)
+      setTopicSuggestions(res)
+    } catch (e: unknown) {
+      const errorMessage = e instanceof Error ? e.message : 'Unknown error'
+      toast.error(`Error fetching topic suggestions: ${errorMessage}`)
+    } finally {
+      setLoadingTopicSuggestions(false)
+    }
+  }, [figure1, figure2])
+
   useEffect(() => {
     void fetchSuggestion()
   }, [fetchSuggestion])
+
+  useEffect(() => {
+    if (step !== 2) return
+    void fetchTopicSuggestions()
+  }, [step])
 
   return (
     <div className="container max-w-2xl mx-auto px-4 py-40 ">
@@ -170,6 +190,7 @@ export const DebateSetupModule = () => {
             setTopic={setTopic}
             handleBack={handleBack}
             topicSuggestions={topicSuggestions}
+            loadingTopicSuggestions={loadingTopicSuggestions}
           />
         )}
       </form>

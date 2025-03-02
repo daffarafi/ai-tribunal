@@ -105,3 +105,11 @@ export async function get_two_random_public_figures() {
     'Provide exactly 2 well-known public figures. Return them as an array.'
   return await fetchGeminiResponse(user_prompt, SchemaType.ARRAY)
 }
+
+export async function generate_topic_suggestions(
+  figure1: string,
+  figure2: string
+) {
+  const user_prompt = `Generate exactly 5 debate topics that would be suitable for a debate between ${figure1} and ${figure2}. Return them as an array of string.`
+  return await fetchGeminiResponse(user_prompt, SchemaType.ARRAY)
+}
