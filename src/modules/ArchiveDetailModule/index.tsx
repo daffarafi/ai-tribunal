@@ -103,12 +103,9 @@ export const ArchiveDetailModule = ({ debateId }: { debateId: number }) => {
           debate_id: debateId,
         },
       })
-      console.log(debate)
       const deserializedDebates = debateDeseralizer(debate as any[])
-      console.log(deserializedDebates)
       setDebateData(deserializedDebates)
     } catch (err) {
-      console.log(err)
       toast.error('Failed to get debate!')
     } finally {
       setIsLoading(false)
@@ -125,7 +122,6 @@ export const ArchiveDetailModule = ({ debateId }: { debateId: number }) => {
       await new Promise((resolve) => setTimeout(resolve, 300))
       toast.error('Vote success!')
     } catch (err) {
-      console.log(err)
       toast.error('Failed to vote!')
     }
   }

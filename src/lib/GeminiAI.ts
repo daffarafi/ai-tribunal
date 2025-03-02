@@ -54,7 +54,6 @@ export default async function generate_script_gemini(
   const result = await model.generateContent(user_prompt)
   const res_json = JSON.parse(result.response.text())
 
-  console.log({ debate: res_json })
   return { debate: res_json }
 }
 

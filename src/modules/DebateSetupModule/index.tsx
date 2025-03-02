@@ -80,7 +80,6 @@ export const DebateSetupModule = () => {
   )
 
   useEffect(() => {
-    console.log('figure1')
     void getFigureImage(figure1, setFigure1Image, setLoadingFirstImage)
   }, [figure1])
 
@@ -92,7 +91,6 @@ export const DebateSetupModule = () => {
     try {
       setLoadingPublicFigures(true)
       const res = await generate_character_suggestions()
-      console.log(res)
       setPublicFigures(res)
     } catch (e: unknown) {
       const errorMessage = e instanceof Error ? e.message : 'Unknown error'
@@ -107,7 +105,6 @@ export const DebateSetupModule = () => {
       setLoadingPublicFigures(true)
 
       const res = await get_typing_suggestions(query)
-      console.log('Search results:', res)
       setPublicFigures(res)
     } catch (e: unknown) {
       const errorMessage = e instanceof Error ? e.message : 'Unknown error'
@@ -120,9 +117,7 @@ export const DebateSetupModule = () => {
   const fetchTopicSuggestions = useCallback(async () => {
     try {
       setLoadingTopicSuggestions(true)
-      console.log(figure1, figure2)
       const res = await generate_topic_suggestions(figure1, figure2)
-      console.log(res)
       setTopicSuggestions(res)
     } catch (e: unknown) {
       const errorMessage = e instanceof Error ? e.message : 'Unknown error'

@@ -70,14 +70,11 @@ export const ArchivesModule = () => {
         contractId: HelloNearContract,
         method: 'get_debates',
       })
-      console.log('debate: ', debates)
       const deserializedDebates = (debates as any[]).map((session) =>
         debateDeseralizer(session)
       )
-      console.log(deserializedDebates)
       setDebates(deserializedDebates.reverse())
     } catch (err) {
-      console.log(err)
       toast.error('Failed to get debates!')
     } finally {
       setIsLoading(false)
