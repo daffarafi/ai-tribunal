@@ -10,6 +10,7 @@ import type { DebateScript, GeneratedImageB64 } from '@/lib/interface'
 import { useWalletSelector } from '@near-wallet-selector/react-hook'
 import { toast } from 'sonner'
 import { HelloNearContract } from '@/config'
+import { MultiStepLoader } from '@/components/ui/multi-step-loader'
 
 import { DebateResult } from './module-elements/DebateResult'
 import { useImageContext } from '@/contexts/ImageContext'
@@ -24,6 +25,7 @@ export const DebateModule = () => {
   const searchParams = useSearchParams()
   const [currentStep, setCurrentStep] = useState<number>(0)
   const [isDebateFinished, setIsDebateFinished] = useState<boolean>(false)
+  // eslint-disable-next-line @typescript-eslint/no-redundant-type-constituents
   const [debateData, setDebateData] = useState<DebateScript | null>(null)
   const [roundImages, setRoundImages] = useState<GeneratedImageB64[]>([])
   const [isLoading, setIsLoading] = useState<boolean>(true)
@@ -31,6 +33,7 @@ export const DebateModule = () => {
   const [loading, setLoading] = useState<boolean>(false)
   const skipRef = useRef<boolean>(false)
   const [isResultShowing, setIsResultShowing] = useState<boolean>(false)
+  const [loadingStep, setLoadingStep] = useState<number>(0)
 
   const figure1 = searchParams.get('figure1') ?? 'Alan Turing'
   const figure2 = searchParams.get('figure2') ?? 'Albert Einstein'
@@ -43,22 +46,13 @@ export const DebateModule = () => {
 
   // Fetch debate script dynamically using async/await with error handling
   useEffect(() => {
-    // async function fetchDebate() {
-    //   try {
-    //     const res = await create_debate_script(topic, figure1, figure2)
-    //     setDebateData(res as unknown as DebateScript)
-    //     setError(null)
-    //   } catch (e: unknown) {
-    //     const errorMessage = e instanceof Error ? e.message : 'Unknown error'
-    //     setError(`Error fetching debate data: ${errorMessage}`)
-    //   }
-    // }
-    // void fetchDebate()
-
     async function fetchDebate() {
+      setLoadingStep(0) // Initiating debate
       try {
+        setLoadingStep(1) // Cooking the script
         const res = await generate_script_gemini(topic, figure1, figure2)
         setDebateData(res as unknown as DebateScript)
+        setLoadingStep(2) // Generating images
         setError(null)
       } catch (e: unknown) {
         const errorMessage = e instanceof Error ? e.message : 'Unknown error'
@@ -66,7 +60,6 @@ export const DebateModule = () => {
       }
     }
     void fetchDebate()
-    // setDebateData(DUMMY_SCRIPT)
   }, [topic, figure1, figure2])
 
   // When debateData is available, fetch images for each round concurrently
@@ -89,6 +82,7 @@ export const DebateModule = () => {
             })
           )
           setRoundImages(images) // Correctly assign the array without type errors
+          setLoadingStep(3) // Finalizing
         } catch (e: unknown) {
           console.error('Error fetching round images', e)
           // In case of error, use fallback images for missing rounds
@@ -173,15 +167,37 @@ export const DebateModule = () => {
     setLoading(false)
   }
 
+  const loadingStates = [
+    { text: 'Initiating debate...' },
+    { text: 'Cooking the script...' },
+    { text: 'Generating images...' },
+    { text: 'Finalizing...' },
+  ]
+
   // Early returns for loading or error
   if (isLoading) {
-    return <p>Loading debate...</p>
+    return (
+      <div className="bg-white">
+        <MultiStepLoader
+          loadingStates={loadingStates}
+          loading={true}
+          duration={5000}
+          loop={false}
+        />
+      </div>
+    )
   }
   if (error) {
-    return <p>{error}</p>
+    return (
+      <div className="h-screen w-full grid place-items-center">{error}</div>
+    )
   }
   if (!debateData || roundImages.length !== debateData.debate.length) {
-    return <p>Preparing debate rounds...</p>
+    return (
+      <div className="h-screen w-full grid place-items-center">
+        Preparing debate rounds...
+      </div>
+    )
   }
 
   const currentRound = debateData.debate[currentStep]
