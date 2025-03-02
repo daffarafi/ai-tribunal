@@ -1,15 +1,22 @@
 'use client'
 
 import { useState, useEffect, useRef } from 'react'
-import { useSearchParams } from 'next/navigation'
+import { useRouter, useSearchParams } from 'next/navigation'
 import Image from 'next/image'
 import { Button } from '@/components/ui/button'
 import { ArrowRight } from 'lucide-react'
 import create_debate_script from '@/lib/DeepSeekAI'
 import { get_img_ai_panel } from '@/lib/GetImgAI'
 import type { DebateScript, GeneratedImageURL } from '@/lib/interface'
+import { useWalletSelector } from '@near-wallet-selector/react-hook'
+import { toast } from 'sonner'
+import { HelloNearContract } from '@/config'
 
 export const DebateModule = () => {
+  const router = useRouter()
+  const { signedAccountId, callFunction } = useWalletSelector()
+  const [loggedIn, setLoggedIn] = useState<boolean>(false)
+
   const searchParams = useSearchParams()
   const [currentStep, setCurrentStep] = useState<number>(0)
   const [isDebateFinished, setIsDebateFinished] = useState<boolean>(false)
@@ -17,12 +24,15 @@ export const DebateModule = () => {
   const [roundImages, setRoundImages] = useState<GeneratedImageURL[]>([])
   const [isLoading, setIsLoading] = useState<boolean>(true)
   const [error, setError] = useState<string | null>(null)
-
+  const [loading, setLoading] = useState<boolean>(false)
   const skipRef = useRef<boolean>(false)
 
   const figure1 = searchParams.get('figure1') ?? 'Alan Turing'
   const figure2 = searchParams.get('figure2') ?? 'Albert Einstein'
   const topic = searchParams.get('topic') ?? 'AI and its impact on society'
+  const figure1Image = searchParams.get('image1') ?? '/figures/alan-turing.webp'
+  const figure2Image =
+    searchParams.get('image2') ?? '/figures/albert-einstein.webp'
   const fallbackImage =
     searchParams.get('image1') ?? '/figures/alan-turing.webp'
 
@@ -74,6 +84,55 @@ export const DebateModule = () => {
     void fetchRoundImages()
   }, [debateData, fallbackImage])
 
+  useEffect(() => {
+    setLoggedIn(!!signedAccountId)
+  }, [signedAccountId])
+
+  const publishDebate = async () => {
+    if (!loggedIn) {
+      toast.error('Please login first!')
+      return
+    }
+    console.log(debateData?.debate)
+    console.log(roundImages)
+
+    // Buat objek hasil penggabungan
+    const finalData = {
+      topic: topic,
+      figure_1_name: figure1,
+      figure_1_image_url:
+        'https://res.cloudinary.com/dva9njnya/image/upload/alan-turing.webp',
+      figure_2_name: figure2,
+      figure_2_image_url:
+        'https://res.cloudinary.com/dva9njnya/image/upload/albert-einstein.webp',
+      debate_dialogue: debateData?.debate.map((round, index) => [
+        round.name,
+        round.description,
+        roundImages[index].url,
+      ]),
+    }
+
+    console.log(finalData)
+
+    // try {
+    //   setLoading(true)
+    //   callFunction({
+    //     contractId: HelloNearContract,
+    //     method: 'create_debate',
+    //     args: finalData,
+    //   })
+    //   await new Promise((resolve) => setTimeout(resolve, 300))
+
+    //   toast.success('Success add new session!')
+    //   router.push('/archive')
+    // } catch (err) {
+    //   console.log(err)
+    //   toast.error('Failed to add new session!')
+    // } finally {
+    //   setLoading(false)
+    // }
+  }
+
   // Early returns for loading or error
   if (isLoading) {
     return <p>Loading debate...</p>
@@ -121,7 +180,12 @@ export const DebateModule = () => {
             <ArrowRight className="ml-2 h-4 w-4" />
           </Button>
         ) : (
-          <h2 className="text-3xl text-yellow-300">Debate Finished</h2>
+          <>
+            <h2 className="text-3xl text-yellow-300">Debate Finished</h2>
+            <Button className="cursor-pointer " onClick={publishDebate}>
+              Publish this debate
+            </Button>
+          </>
         )}
       </div>
     </div>

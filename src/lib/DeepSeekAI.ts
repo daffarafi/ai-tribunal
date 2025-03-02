@@ -78,3 +78,130 @@ EXAMPLE JSON OUTPUT:
     )
   }
 }
+
+export async function generate_character_suggestions(): Promise<string[]> {
+  const system_prompt = `You are a helpful assistant. Generate a list of 10 well-known public figures suitable for a debate in JSON format. The output should be a valid JSON object with a "names" key containing an array of well-known names.`
+  const user_prompt = `Generate exactly 10 well-known public figures suitable for a debate and return them in a JSON object with a "names" key containing an array of their names.`
+
+  const response = await openai.chat.completions.create({
+    messages: [
+      { role: 'system', content: system_prompt },
+      { role: 'user', content: user_prompt },
+    ],
+    model: 'deepseek-chat',
+    response_format: {
+      type: 'json_object',
+    },
+    seed: Math.floor(Math.random() * 1000000),
+  })
+
+  const content = response.choices[0]?.message?.content
+  if (!content) {
+    throw new Error('Empty response content from DeepSeek API')
+  }
+
+  try {
+    const parsedContent = JSON.parse(content)
+    if (
+      !parsedContent.names ||
+      !Array.isArray(parsedContent.names) ||
+      !parsedContent.names.every((item: any) => typeof item === 'string')
+    ) {
+      throw new Error(
+        'Invalid JSON format: Expected an object with a "names" key containing an array of strings'
+      )
+    }
+    if (parsedContent.names.length !== 10) {
+      throw new Error('Expected exactly 10 character suggestions')
+    }
+    return parsedContent.names
+  } catch (err) {
+    throw new Error(
+      'Failed to parse character suggestions JSON: ' +
+        (err instanceof Error ? err.message : 'unknown error')
+    )
+  }
+}
+
+export async function get_typing_suggestions(input: string): Promise<string[]> {
+  if (!input.trim()) return []
+
+  const system_prompt = `You are a helpful assistant. Provide autocomplete suggestions for well-known public figures whose names start with the given input. The output should be a valid JSON object with a "suggestions" key containing an array of matching names.`
+  const user_prompt = `Provide a list of up to 10 well-known public figures whose names start with "${input}". Return the results in a JSON object with a "suggestions" key containing an array of matching names.`
+
+  const response = await openai.chat.completions.create({
+    messages: [
+      { role: 'system', content: system_prompt },
+      { role: 'user', content: user_prompt },
+    ],
+    model: 'deepseek-chat',
+    response_format: {
+      type: 'json_object',
+    },
+  })
+
+  const content = response.choices[0]?.message?.content
+  if (!content) {
+    throw new Error('Empty response content from DeepSeek API')
+  }
+
+  try {
+    const parsedContent = JSON.parse(content)
+    if (
+      !parsedContent.suggestions ||
+      !Array.isArray(parsedContent.suggestions) ||
+      !parsedContent.suggestions.every((item: any) => typeof item === 'string')
+    ) {
+      throw new Error(
+        'Invalid JSON format: Expected an object with a "suggestions" key containing an array of strings'
+      )
+    }
+    return parsedContent.suggestions
+  } catch (err) {
+    throw new Error(
+      'Failed to parse typing suggestions JSON: ' +
+        (err instanceof Error ? err.message : 'unknown error')
+    )
+  }
+}
+
+export async function get_two_random_public_figures(): Promise<string[]> {
+  const system_prompt = `You are a helpful assistant. Provide autocomplete suggestions for well-known public figures whose names start with the given input. The output should be a valid JSON object with a "suggestions" key containing an array of matching names.`
+  const user_prompt = `Provide a list of up to 2 well-known public figures. Return the results in a JSON object with a "suggestions" key containing an array of matching names.`
+
+  const response = await openai.chat.completions.create({
+    messages: [
+      { role: 'system', content: system_prompt },
+      { role: 'user', content: user_prompt },
+    ],
+    model: 'deepseek-chat',
+    response_format: {
+      type: 'json_object',
+    },
+    seed: Math.floor(Math.random() * 1000000),
+  })
+
+  const content = response.choices[0]?.message?.content
+  if (!content) {
+    throw new Error('Empty response content from DeepSeek API')
+  }
+
+  try {
+    const parsedContent = JSON.parse(content)
+    if (
+      !parsedContent.suggestions ||
+      !Array.isArray(parsedContent.suggestions) ||
+      !parsedContent.suggestions.every((item: any) => typeof item === 'string')
+    ) {
+      throw new Error(
+        'Invalid JSON format: Expected an object with a "suggestions" key containing an array of strings'
+      )
+    }
+    return parsedContent.suggestions
+  } catch (err) {
+    throw new Error(
+      'Failed to parse typing suggestions JSON: ' +
+        (err instanceof Error ? err.message : 'unknown error')
+    )
+  }
+}
