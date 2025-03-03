@@ -19,9 +19,7 @@ export async function get_img_ai(figure1: string, figure2: string) {
   }
   try {
     const res = await fetch(url, options)
-    console.log(res)
     const content = (await res.json()) as { cost: number; url: string }
-    console.log(content)
     return content
   } catch (e: unknown) {
     console.error(e)
@@ -60,9 +58,7 @@ export async function get_img_ai_flux(figure1: string, figure2: string) {
   }
   try {
     const res = await fetch(url, options)
-    console.log(res)
     const content = (await res.json()) as { cost: number; url: string }
-    console.log(content)
     return content
   } catch (e: unknown) {
     console.error(e)
@@ -96,9 +92,7 @@ export async function get_img_ai_panel(figure: string, description: string) {
   }
   try {
     const res = await fetch(url, options)
-    console.log(res)
     const content = (await res.json()) as { cost: number; image: string }
-    console.log(content)
     return content
   } catch (e: unknown) {
     console.error(e)
@@ -129,9 +123,7 @@ export async function get_img_ai_profile(figure: string) {
   }
   try {
     const res = await fetch(url, options)
-    console.log(res)
     const content = (await res.json()) as { cost: number; image: string }
-    console.log(content)
     return content
   } catch (e: unknown) {
     console.error(e)

@@ -42,8 +42,6 @@ export const DebateModule = () => {
   const fallbackImage =
     searchParams.get('image1') ?? '/figures/alan-turing.webp'
 
-  console.log('figure1Image: ', figure1Image)
-
   // Fetch debate script dynamically using async/await with error handling
   useEffect(() => {
     async function fetchDebate() {
@@ -73,7 +71,6 @@ export const DebateModule = () => {
                 round.name,
                 round.description
               )
-              console.log(result)
               // Ensure result is always treated as GeneratedImageURL
               if (typeof result === 'string') {
                 return { image: result, cost: 0 } // Convert string to object
@@ -143,8 +140,6 @@ export const DebateModule = () => {
       ]),
     }
 
-    console.log(finalData)
-
     try {
       setLoading(true)
       callFunction({
@@ -159,7 +154,6 @@ export const DebateModule = () => {
       toast.success('Success add new session!')
       router.push('/archives')
     } catch (err) {
-      console.log(err)
       toast.error('Failed to add new session!')
     } finally {
       setLoading(false)
@@ -173,6 +167,12 @@ export const DebateModule = () => {
     { text: 'Generating images...' },
     { text: 'Finalizing...' },
   ]
+
+  useEffect(() => {
+    if (searchParams.toString().includes('account_id')) {
+      router.push('/archives')
+    }
+  }, [searchParams])
 
   // Early returns for loading or error
   if (isLoading) {

@@ -103,12 +103,9 @@ export const ArchiveDetailModule = ({ debateId }: { debateId: number }) => {
           debate_id: debateId,
         },
       })
-      console.log(debate)
       const deserializedDebates = debateDeseralizer(debate as any[])
-      console.log(deserializedDebates)
       setDebateData(deserializedDebates)
     } catch (err) {
-      console.log(err)
       toast.error('Failed to get debate!')
     } finally {
       setIsLoading(false)
@@ -125,7 +122,6 @@ export const ArchiveDetailModule = ({ debateId }: { debateId: number }) => {
       await new Promise((resolve) => setTimeout(resolve, 300))
       toast.error('Vote success!')
     } catch (err) {
-      console.log(err)
       toast.error('Failed to vote!')
     }
   }
@@ -285,7 +281,7 @@ export const ArchiveDetailModule = ({ debateId }: { debateId: number }) => {
 
               <div className="bg-blue-900/30 border border-blue-700/50 rounded-lg p-6 mb-4">
                 <div className="flex mb-2 justify-end">
-                  <Button
+                  {/* <Button
                     variant="outline"
                     size="sm"
                     onClick={handleReplay}
@@ -293,7 +289,7 @@ export const ArchiveDetailModule = ({ debateId }: { debateId: number }) => {
                   >
                     <Play />
                     Replay
-                  </Button>
+                  </Button> */}
                 </div>
                 <div className="space-y-4 max-h-[30vh] overflow-y-auto mb-2">
                   {debateData.dialogue.map((msg, index) => (
