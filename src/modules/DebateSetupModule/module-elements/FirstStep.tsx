@@ -7,8 +7,8 @@ import { Label } from '@/components/ui/label'
 import { SearchSelect } from './SearchSelect'
 import { ArrowRight, Shuffle, Lightbulb, Loader } from 'lucide-react'
 import { useState } from 'react'
-import { get_two_random_public_figures } from '@/lib/GeminiAI'
 import { toast } from 'sonner'
+import { getRandomPairs } from '@/lib/RandomPair'
 
 interface FirstStepProps {
   figure1: string
@@ -53,7 +53,7 @@ export const FirstStep: React.FC<FirstStepProps> = ({
   const handleRandomSelection = async () => {
     try {
       setLoadingRandomSelection(true)
-      const res = await get_two_random_public_figures()
+      const res = getRandomPairs()
 
       handleSelectFigure(res[0], setFigure1)
       handleSelectFigure(res[1], setFigure2)
